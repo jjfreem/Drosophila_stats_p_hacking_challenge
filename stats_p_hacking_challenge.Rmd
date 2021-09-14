@@ -1,0 +1,48 @@
+---
+title: "stats_p_hacking_challenge"
+output: html_document
+---
+Question: Is cardiovascular death rate negatively associated with new COVID-19 cases? 
+
+Approach: subset COVID-19 dataset by new cases on a paritcular day in a specific continent to assess correlation with cardiovascular death rate
+
+set work directory and load package
+```{r}
+setwd("~/Desktop/BSD BootCamp qBio7/BSD-QBio7/tutorials/stats_for_large_data")
+library(dplyr)
+```
+download and create dataset
+```{r}
+covid <- read.csv("https://covid.ourworldindata.org/data/owid-covid-data.csv", na.strings = "",header=T)
+summary(covid)
+```
+subset data to obtain the population in Asia on 01/08/2021
+```{r}
+newcovid <- subset(covid, c(covid$continent == "Asia", covid$date == "2021-01-08"))
+summary(newcovid)
+```
+run linear regression to test the relationship between new COVID-19 cases and cardiovascular death rate in Asia on 01/08/2021
+```{r}
+fit <- lm(new_cases ~ cardiovasc_death_rate, newcovid)
+summary(fit)
+```
+Call:
+lm(formula = new_cases ~ cardiovasc_death_rate, data = newcovid)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-61748  -2801  -2373  -1359 411416 
+
+Coefficients:
+                      Estimate Std. Error t value Pr(>|t|)    
+(Intercept)           3381.435    210.808  16.040  < 2e-16 ***
+cardiovasc_death_rate   -2.161      0.656  -3.294 0.000991 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 15210 on 26129 degrees of freedom
+  (1271 observations deleted due to missingness)
+Multiple R-squared:  0.000415,    Adjusted R-squared:  0.0003767 
+F-statistic: 10.85 on 1 and 26129 DF,  p-value: 0.0009907
+
+Answer: Among Asian countries (on 01/08/2021), cardiovascular death rate was negatively associated with new COVID-19 cases, with a p-value of 0.0009907. This is because patients are dying of COVID, increasing the overall amount of deaths, thus decreasing the cardiovascular death rate. Additionally, patients that have COVID are not dying due to cardiovascular complications.
